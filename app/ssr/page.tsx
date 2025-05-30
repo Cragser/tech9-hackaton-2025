@@ -1,6 +1,9 @@
 import { createServerSupabaseClient } from "./client";
 import AddTaskForm from "./AddTaskForm";
 
+// This forces the page to be dynamically rendered at request time
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // Use the custom Supabase client you created
   const client = createServerSupabaseClient();
