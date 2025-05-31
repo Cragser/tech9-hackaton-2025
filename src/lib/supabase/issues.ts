@@ -151,15 +151,37 @@ export async function deleteIssue(id: number, sessionToken?: string | null): Pro
 export async function likeIssue(id: number, sessionToken?: string | null): Promise<Issue> {
   const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
 
-  const { data, error } = await client
+  // First, try using the RPC function
+  const { data: rpcData, error: rpcError } = await client
     .rpc('increment_likes', { issue_id: id });
 
-  if (error) {
-    console.error('Error liking issue:', error);
-    throw new Error(error.message);
+  if (rpcError) {
+    console.warn('RPC increment_likes failed, trying direct update:', rpcError);
+
+    // Fallback: Direct update approach
+    // First get the current issue
+    const currentIssue = await fetchIssueById(id, sessionToken);
+    if (!currentIssue) {
+      throw new Error(`Issue with id ${id} not found`);
+    }
+
+    // Update the likes count directly
+    const { data: updateData, error: updateError } = await client
+      .from('issues')
+      .update({ likes: (currentIssue.likes || 0) + 1 })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Error updating likes directly:', updateError);
+      throw new Error(updateError.message || 'Failed to update likes');
+    }
+
+    return updateData;
   }
 
-  // Fetch the updated issue
+  // If RPC succeeded, fetch the updated issue
   return fetchIssueById(id, sessionToken) as Promise<Issue>;
 }
 

@@ -11,6 +11,7 @@ import {
   claimIssue,
   resolveIssue,
 } from '@/lib/supabase/issues';
+import type { RootState } from '../store';
 
 // Helper to get session token (will be passed from components)
 let currentSessionToken: string | null = null;
@@ -109,13 +110,37 @@ export const issuesApi = createApi({
     likeIssue: builder.mutation<Issue, number>({
       queryFn: async (id) => {
         try {
+          console.log('Attempting to like issue:', id, 'with token:', currentSessionToken ? 'present' : 'null');
           const data = await likeIssue(id, currentSessionToken);
+          console.log('Like successful, updated issue:', data);
           return { data };
         } catch (error) {
-          return { error: { status: 'FETCH_ERROR', error: String(error) } };
+          console.error('Like mutation failed:', error);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          return { error: { status: 'FETCH_ERROR', error: errorMessage } };
         }
       },
-      invalidatesTags: (result, error, id) => [{ type: 'Issue', id }, 'Issue'],
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        // Optimistic update: immediately update the cache
+        const patchResult = dispatch(
+          issuesApi.util.updateQueryData('getIssues', undefined, (draft) => {
+            const issue = draft.find((issue) => issue.id === id);
+            if (issue) {
+              issue.likes = (issue.likes || 0) + 1;
+            }
+          })
+        );
+
+        try {
+          // Wait for the mutation to complete
+          await queryFulfilled;
+        } catch {
+          // If the mutation fails, revert the optimistic update
+          patchResult.undo();
+        }
+      },
+      // Don't invalidate tags to prevent refetching
+      invalidatesTags: [],
     }),
 
     // Claim an issue

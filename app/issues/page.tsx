@@ -9,6 +9,8 @@ import { useGetIssuesQuery, useLikeIssueMutation, useClaimIssueMutation, setSess
 import { transformIssuesForUI, mapUIStatusToDBStatus } from "@/lib/utils/issueTransforms";
 import { IssueWithExtras } from "@/types/issue";
 import { useSession } from "@clerk/nextjs";
+import { useAppDispatch } from "@/store/hooks";
+import { setSessionToken as setReduxSessionToken } from "@/store/slices/authSlice";
 
 export default function IssuesPage() {
   const [filter, setFilter] = useState("all");
@@ -16,23 +18,27 @@ export default function IssuesPage() {
 
   // Get Clerk session for authentication
   const { session } = useSession();
+  const dispatch = useAppDispatch();
 
   // Set session token for API calls
   useEffect(() => {
     const getToken = async () => {
       if (session) {
         const token = await session.getToken();
+        // Set token in both Redux store and API module
+        dispatch(setReduxSessionToken(token));
         setSessionToken(token);
       } else {
+        dispatch(setReduxSessionToken(null));
         setSessionToken(null);
       }
     };
     getToken();
-  }, [session]);
+  }, [session, dispatch]);
 
   // Fetch issues from Supabase using Redux
   const { data: rawIssues = [], error, isLoading } = useGetIssuesQuery();
-  const [likeIssue] = useLikeIssueMutation();
+  const [likeIssue, { isLoading: isLikingIssue }] = useLikeIssueMutation();
   const [claimIssue] = useClaimIssueMutation();
 
   // Transform raw Supabase data for UI
@@ -68,9 +74,19 @@ export default function IssuesPage() {
   // Handle like issue
   const handleLikeIssue = async (issueId: number) => {
     try {
-      await likeIssue(issueId).unwrap();
-    } catch (error) {
-      console.error('Failed to like issue:', error);
+      console.log('Liking issue:', issueId);
+      const result = await likeIssue(issueId).unwrap();
+      console.log('Like successful:', result);
+      // Success feedback could be added here (toast notification, etc.)
+    } catch (error: any) {
+      console.error('Failed to like issue:', {
+        issueId,
+        error,
+        errorMessage: error?.error || error?.message || 'Unknown error',
+        errorStatus: error?.status
+      });
+      // Error feedback could be added here (toast notification, etc.)
+      // Note: Optimistic update will be reverted automatically on error
     }
   };
 
@@ -297,9 +313,14 @@ export default function IssuesPage() {
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={() => handleLikeIssue(issue.id)}
-                    className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                    disabled={isLikingIssue}
+                    className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <ThumbsUp className="w-4 h-4 mr-1" />
+                    {isLikingIssue ? (
+                      <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                    ) : (
+                      <ThumbsUp className="w-4 h-4 mr-1" />
+                    )}
                     {issue.likes}
                   </button>
                   <div className="flex items-center text-sm text-gray-600">
