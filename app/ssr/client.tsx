@@ -6,10 +6,15 @@ export function createServerSupabaseClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_KEY!,
-    {
-      async accessToken() {
-        return (await auth()).getToken();
-      },
-    },
+    // {
+    //   async accessToken() {
+    //     return (await auth()).getToken();
+    //   },
+    // },
   );
 }
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_KEY!,
+);
