@@ -104,9 +104,9 @@ export default function AISummaryComponent({
       <Button
         onClick={handleGenerateSummary}
         disabled={isLoading}
-        variant="outline"
+        variant="default"
         size="sm"
-        className="w-full sm:w-auto"
+        className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium shadow-md hover:shadow-lg transition-all"
       >
         {isLoading ? (
           <>
@@ -116,7 +116,7 @@ export default function AISummaryComponent({
         ) : (
           <>
             <Zap className="w-4 h-4 mr-2" />
-            Generate AI Summary
+            AI to the Rescue!
           </>
         )}
       </Button>
@@ -159,10 +159,10 @@ export default function AISummaryComponent({
             </CollapsibleTrigger>
 
             <CollapsibleContent className="mt-2">
-              <Card className="border-blue-200">
-                <CardContent className="p-4">
+              <Card className="border-blue-200 shadow-md">
+                <CardContent className="p-4 bg-gradient-to-b from-white to-blue-50">
                   {/* Summary Overview */}
-                  <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                  <div className="mb-6 p-4 bg-blue-100 rounded-lg shadow-inner">
                     <h4 className="font-semibold text-blue-800 mb-2">Summary</h4>
                     <p className="text-blue-700">{summaryData.summary}</p>
                   </div>
@@ -195,7 +195,7 @@ export default function AISummaryComponent({
                       {summaryData.solutions.map((solution, index) => (
                         <div
                           key={index}
-                          className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
                         >
                           <div className="flex items-start justify-between mb-3">
                             <h5 className="font-medium text-gray-900">{solution.title}</h5>
