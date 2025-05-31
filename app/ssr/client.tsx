@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
+import { Database } from "@/types/database.types";
 
 // Función para crear un cliente de Supabase que funciona tanto en renderizado estático como dinámico
 export function createServerSupabaseClient() {
@@ -15,7 +16,7 @@ export function createServerSupabaseClient() {
 }
 
 // Lets use this one!!
-export const supabase = createClient(
+export const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_KEY!,
 );
