@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, Calendar, MessageCircle, ThumbsUp, AlertTriangle, CheckCircle, Clock, User, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useGetIssuesQuery, useLikeIssueMutation, useClaimIssueMutation, setSessionToken } from "@/store/api/issuesApi";
 import { transformIssuesForUI, mapUIStatusToDBStatus } from "@/lib/utils/issueTransforms";
 import { IssueWithExtras } from "@/types/issue";
@@ -244,31 +245,44 @@ export default function IssuesPage() {
         {issues.map((issue) => (
           <Card key={issue.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg font-semibold text-gray-900 mb-2">
-                    {issue.title}
-                  </CardTitle>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="outline" className={getStatusColor(issue.status)}>
-                      {getStatusIcon(issue.status)}
-                      <span className="ml-1 capitalize">{issue.status}</span>
-                    </Badge>
-                    <Badge variant="outline" className={getUrgencyColor(issue.priority)}>
-                      <span className="capitalize">{issue.priority} Priority</span>
-                    </Badge>
-                    <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200">
-                      {issue.category}
-                    </Badge>
+              <div className="flex items-start justify-between gap-4">
+                {issue.photo_url &&
+                  <div className="flex-shrink-0 relative w-[80px] h-[80px]">
+                    <Image
+                      src={issue.photo_url ?? ''}
+                      alt="Issue thumbnail"
+                      fill
+                      className="object-cover rounded-lg"
+                    />
                   </div>
-                </div>
-                <div className="text-right flex-shrink-0 ml-4">
-                  <div className="text-sm text-gray-500 mb-1">AI Rank</div>
-                  <div className={`text-2xl font-bold ${
-                    (issue.aiRank || 0) >= 80 ? 'text-red-600' :
-                    (issue.aiRank || 0) >= 60 ? 'text-yellow-600' : 'text-green-600'
-                  }`}>
-                    {issue.aiRank || 0}
+                }
+                <div className="flex-1">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg font-semibold text-gray-900 mb-2">
+                        {issue.title}
+                      </CardTitle>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <Badge variant="outline" className={getStatusColor(issue.status)}>
+                          {getStatusIcon(issue.status)}
+                          <span className="ml-1 capitalize">{issue.status}</span>
+                        </Badge>
+                        <Badge variant="outline" className={getUrgencyColor(issue.priority)}>
+                          <span className="capitalize">{issue.priority} Priority</span>
+                        </Badge>
+                        <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200">
+                          {issue.category}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0 ml-4">
+                      <div className="text-sm text-gray-500 mb-1">AI Rank</div>
+                      <div className={`text-2xl font-bold ${(issue.aiRank || 0) >= 80 ? 'text-red-600' :
+                          (issue.aiRank || 0) >= 60 ? 'text-yellow-600' : 'text-green-600'
+                        }`}>
+                        {issue.aiRank || 0}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0 ml-4">
@@ -339,13 +353,13 @@ export default function IssuesPage() {
                 </div>
 
                 <div className="space-x-2">
-                  {issue.status === "open" && (
+                  {issue.status === "REGISTERED" && (
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="default"
                       onClick={() => handleClaimIssue(issue.id)}
                     >
-                      Claim Issue
+                      Be a hero
                     </Button>
                   )}
                   <Button size="sm" variant="ghost">

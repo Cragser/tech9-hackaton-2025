@@ -12,6 +12,7 @@ export interface Issue {
   priority: string;
   fixed_by: number | null;
   likes: number;
+  photo_url: string;
 }
 
 // Extended interface for UI display with additional computed fields
