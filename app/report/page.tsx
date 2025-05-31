@@ -260,7 +260,7 @@ export default function ReportPage() {
                 <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-xs font-bold text-green-700">3</span>
                 </div>
-                <p className="text-sm text-gray-600">You'll receive updates when progress is made</p>
+                <p className="text-sm text-gray-600">You&apos;ll receive updates when progress is made</p>
               </div>
             </CardContent>
           </Card>

@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Heart, DollarSign, Users, Target } from "lucide-react";
 
-export default function DonatePage() {
+// Using a named function component to avoid potential hook rule issues
+const DonatePage = () => {
   const [amount, setAmount] = useState("");
   const [donorName, setDonorName] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -203,4 +204,6 @@ export default function DonatePage() {
       </div>
     </div>
   );
-} 
+};
+
+export default DonatePage; 

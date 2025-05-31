@@ -6,6 +6,7 @@ import { MapPin, Zap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCommunityIssues } from "@/lib/community/api";
 import { IssuesSkeleton } from "./IssuesSkeleton";
+import Image from "next/image";
 
 export default function CommunityIssues() {
   // Use React Query to fetch data
@@ -39,9 +40,11 @@ export default function CommunityIssues() {
           <Card key={issue.id} className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-6">
-                <img 
+                <Image 
                   src={issue.image} 
                   alt={issue.title}
+                  width={192}
+                  height={128}
                   className="w-full md:w-48 h-32 object-cover rounded-lg"
                 />
                 <div className="flex-1">

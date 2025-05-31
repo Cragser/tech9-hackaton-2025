@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+AI Integration Rules
+
+React Query Integrations
+Begin creating all React Query integrations. For now:
+
+All functions must return mock data.
+
+Any "save" actions should pretend success (return a positive response).
+
+Endpoints to Support (Mocked)
+
+Save issue information
+
+Get issues list
+
+Get @app user profile
+
+Loading Behavior
+
+Each API call must simulate a 400ms delay.
+
+Display a skeleton loader that matches the expected UI structure during this delay.
+
+Folder Convention
+
+Any file that performs an API call must be placed inside the @modules folder.
+
+Package Manager
+
+Use pnpm for all dependency management.
+

@@ -1,0 +1,20 @@
+{
+    "terminal.integrated.profiles.osx": {
+      "zsh": {
+        "path": "/bin/zsh",
+        "args": ["-l"]
+      }
+    },
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.inheritEnv": true,
+    "terminal.integrated.env.osx": {
+      "PATH": "/Users/cragser/.nvm/versions/node/v22.16.0/bin:${env:PATH}"
+    },
+    "cursor.terminal.usePreviewBox": true,
+    "npm.packageManager": "pnpm",
+    "npm.enableRunFromFolder": true,
+    "typescript.preferences.packageManager": "pnpm",
+    "extensions.ignoreRecommendations": false,
+    "nx.enableTasksView": true,
+    "nx.enableCodeLens": true
+  }
