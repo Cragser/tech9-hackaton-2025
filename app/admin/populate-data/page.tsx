@@ -3,8 +3,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "../../ssr/client";
+import { createClient } from "@supabase/supabase-js";
 import { Loader2, CheckCircle, AlertTriangle } from "lucide-react";
+
+// Create Supabase client inside the component to avoid React hooks rules violation
+function useSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_KEY!
+  );
+}
 
 const sampleIssues = [
   // Infrastructure Issues
@@ -341,6 +349,7 @@ export default function PopulateDataPage() {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [currentCount, setCurrentCount] = useState<number | null>(null);
+  const supabase = useSupabase();
 
   const checkCurrentCount = async () => {
     try {

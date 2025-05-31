@@ -8,6 +8,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { ReduxProvider } from "@/components/providers/ReduxProvider";
 
+
 export default function RootLayout({
   children,
 }: {

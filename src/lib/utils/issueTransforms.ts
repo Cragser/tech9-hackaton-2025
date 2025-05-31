@@ -65,7 +65,7 @@ export function transformIssueForUI(issue: Issue): IssueWithExtras {
     ...issue,
     category: getCategoryName(issue.category_id),
     reportedBy: issue.created_by,
-    claimedBy: issue.fixed_by ? `User ${issue.fixed_by}` : null,
+    claimedBy: issue.fixed_by ? `User ${issue.fixed_by}` : undefined,
     comments: Math.floor(Math.random() * 10) + 1, // Mock comment count
     upvotes: issue.likes,
     aiSummary: generateAISummary(issue),
