@@ -5,10 +5,56 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Camera, MapPin, AlertCircle, Upload } from "lucide-react";
 import { supabase } from "../ssr/client";
+import PriorityEnum from "@/constants/priority";
 
 
 export default function ReportPage() {
-  useEffect(() => {
+  const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    category: null,
+    location: "",
+    urgency: PriorityEnum.LOW,
+    photo_url: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // Generate a random filename with original extension
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+
+      // Upload file to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      const { data: signedUrlData } = await supabase.storage
+        .from('images')
+        .createSignedUrl(fileName, 60 * 60);
+
+      console.log(signedUrlData?.signedUrl)
+
+      // Update form state with the public URL
+      setFormData(prev => ({
+        ...prev,
+        photo_url: signedUrlData?.signedUrl ?? ''
+      }));
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      // You might want to show a user-friendly error message here
+    }
+  };
+
+  useEffect(function loadCategories() {
     console.log("ReportPage");
 
     function loadData() {
@@ -17,6 +63,7 @@ export default function ReportPage() {
           console.error("Error loading categories:", error);
         } else {
           console.log("Categories loaded:", data);
+          setCategories(data);
         }
       });
     }
@@ -24,47 +71,39 @@ export default function ReportPage() {
     loadData();
   }, []);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: "",
-    location: "",
-    urgency: "medium"
-  });
-  const [submitting, setSubmitting] = useState(false);
 
-  const categories = [
-    "Infrastructure",
-    "Safety",
-    "Environment",
-    "Public Facilities",
-    "Transportation",
-    "Other"
-  ];
+  // const categories = [
+  //   "Infrastructure",
+  //   "Safety",
+  //   "Environment",
+  //   "Public Facilities",
+  //   "Transportation",
+  //   "Other"
+  // ];
 
   const urgencyLevels = [
-    { value: "low", label: "Low", color: "text-green-600" },
-    { value: "medium", label: "Medium", color: "text-yellow-600" },
-    { value: "high", label: "High", color: "text-red-600" }
+    { value: PriorityEnum.LOW, label: "Low", color: "text-green-600" },
+    { value: PriorityEnum.MEDIUM, label: "Medium", color: "text-yellow-600" },
+    { value: PriorityEnum.HIGH, label: "High", color: "text-red-600" }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.description || !formData.category) return;
-    
+
     setSubmitting(true);
     // TODO: Implement issue submission to database
-    setTimeout(() => {
-      alert("Issue reported successfully! Our community heroes will be notified.");
-      setFormData({
-        title: "",
-        description: "",
-        category: "",
-        location: "",
-        urgency: "medium"
-      });
-      setSubmitting(false);
-    }, 1000);
+    // setTimeout(() => {
+    //   alert("Issue reported successfully! Our community heroes will be notified.");
+    //   setFormData({
+    //     title: "",
+    //     description: "",
+    //     category: "",
+    //     location: "",
+    //     urgency: PriorityEnum.MEDIUM
+    //   });
+    //   setSubmitting(false);
+    // }, 1000);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -87,7 +126,7 @@ export default function ReportPage() {
           Report an Issue
         </h1>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Help improve your community by reporting problems that need attention. 
+          Help improve your community by reporting problems that need attention.
           Our heroes are ready to help!
         </p>
       </div>
@@ -129,15 +168,15 @@ export default function ReportPage() {
                   <select
                     id="category"
                     name="category"
-                    value={formData.category}
+                    value={formData.category ?? ''}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
                     required
                   >
                     <option value="">Select a category</option>
                     {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
+                      <option key={category.id} value={category.id}>
+                        {category.name}
                       </option>
                     ))}
                   </select>
@@ -206,16 +245,26 @@ export default function ReportPage() {
                 {/* Photo Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Photo (Coming Soon)
+                    Photo
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50 opacity-60">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="photo-upload"
+                  />
+                  <div
+                    onClick={() => document.getElementById('photo-upload')?.click()}
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
                     <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">Photo upload feature coming soon</p>
+                    <p className="text-sm text-gray-500">Click to select a photo</p>
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={submitting || !formData.title || !formData.description || !formData.category}
                   className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white py-3"
                 >
