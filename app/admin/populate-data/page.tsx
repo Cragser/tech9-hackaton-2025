@@ -544,8 +544,8 @@ export default function PopulateDataPage() {
             <h3 className="font-medium text-yellow-900 mb-2">Instructions:</h3>
             <ol className="text-sm text-yellow-800 space-y-1 list-decimal list-inside">
               <li>Check the current count to see if data already exists</li>
-              <li>Click "Populate Sample Data" to insert {sampleIssues.length} sample issues</li>
-              <li>Use "Clear All Data" to remove all issues if needed</li>
+              <li>Click &quot;Populate Sample Data&quot; to insert {sampleIssues.length} sample issues</li>
+              <li>Use &quot;Clear All Data&quot; to remove all issues if needed</li>
               <li>Visit the <a href="/issues" className="underline font-medium">Issues Page</a> to see the populated data</li>
             </ol>
           </div>
