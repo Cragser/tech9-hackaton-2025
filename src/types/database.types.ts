@@ -62,6 +62,7 @@ export type Database = {
           id: number
           likes: number | null
           location: string | null
+          photo_url: string | null
           priority: string | null
           status: string | null
           title: string | null
@@ -76,6 +77,7 @@ export type Database = {
           id?: number
           likes?: number | null
           location?: string | null
+          photo_url?: string | null
           priority?: string | null
           status?: string | null
           title?: string | null
@@ -90,6 +92,7 @@ export type Database = {
           id?: number
           likes?: number | null
           location?: string | null
+          photo_url?: string | null
           priority?: string | null
           status?: string | null
           title?: string | null

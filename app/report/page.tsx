@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Camera, MapPin, AlertCircle, Upload } from "lucide-react";
 import { supabase } from "../ssr/client";
 import PriorityEnum from "@/constants/priority";
+import { useUser } from "@clerk/nextjs";
 
 
 export default function ReportPage() {
   const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     title: "",
+    cost: 0,
     description: "",
     category: null,
     location: "",
@@ -63,7 +66,7 @@ export default function ReportPage() {
           console.error("Error loading categories:", error);
         } else {
           console.log("Categories loaded:", data);
-          setCategories(data);
+          setCategories(data.map(category => ({ id: category.id, name: category.name ?? '' })));
         }
       });
     }
@@ -92,6 +95,19 @@ export default function ReportPage() {
     if (!formData.title || !formData.description || !formData.category) return;
 
     setSubmitting(true);
+
+    await supabase.from("issues").insert({
+      title: formData.title,
+      description: formData.description,
+      category_id: Number(formData.category),
+      location: formData.location,
+      priority: formData.urgency,
+      photo_url: formData.photo_url,
+      cost: Number(formData.cost),
+      created_by: user?.emailAddresses[0]?.emailAddress
+    });
+
+    setSubmitting(false);
     // TODO: Implement issue submission to database
     // setTimeout(() => {
     //   alert("Issue reported successfully! Our community heroes will be notified.");
@@ -160,6 +176,22 @@ export default function ReportPage() {
                   />
                 </div>
 
+                <div>
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                    Estimated Cost
+                  </label>
+                  <input
+                    id="cost"
+                    name="cost"
+                    type="number"
+                    placeholder="Estimated cost of the issue"
+                    value={formData.cost}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                    required
+                  />
+                </div>
+
                 {/* Category */}
                 <div>
                   <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
@@ -175,7 +207,7 @@ export default function ReportPage() {
                   >
                     <option value="">Select a category</option>
                     {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
+                      <option key={category.id} value={Number(category.id)}>
                         {category.name}
                       </option>
                     ))}
