@@ -11,6 +11,7 @@ import { IssueWithExtras } from "@/types/issue";
 import { useSession } from "@clerk/nextjs";
 import { useAppDispatch } from "@/store/hooks";
 import { setSessionToken as setReduxSessionToken } from "@/store/slices/authSlice";
+import { AISummaryComponent } from "../@modules/ai-summary";
 
 export default function IssuesPage() {
   const [filter, setFilter] = useState("all");
@@ -281,16 +282,7 @@ export default function IssuesPage() {
             <CardContent>
               <p className="text-gray-700 mb-4">{issue.description}</p>
 
-              {/* AI Summary */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-xs text-white font-bold">AI</span>
-                  </div>
-                  <span className="text-sm font-medium text-blue-800">AI Summary</span>
-                </div>
-                <p className="text-sm text-blue-700">{issue.aiSummary}</p>
-              </div>
+        
 
               {/* Issue Details */}
               <div className="grid md:grid-cols-2 gap-4 mb-4">
@@ -312,6 +304,17 @@ export default function IssuesPage() {
                     Claimed by {issue.claimedBy}
                   </div>
                 )}
+              </div>
+
+              {/* AI Analysis Section */}
+              <div className="mb-4">
+                <AISummaryComponent
+                  issueId={issue.id}
+                  issueTitle={issue.title}
+                  issueDescription={issue.description}
+                  issueCategory={issue.category}
+                  issuePriority={issue.priority}
+                />
               </div>
 
               {/* Actions and Stats */}
