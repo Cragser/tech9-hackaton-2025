@@ -270,6 +270,12 @@ export default function IssuesPage() {
                     {issue.aiRank || 0}
                   </div>
                 </div>
+                <div className="text-right flex-shrink-0 ml-4">
+                  <div className="text-sm text-gray-500 mb-1">Cost</div>
+                  <div className={`text-2xl font-bold`}>
+                    {issue.cost || 0}
+                  </div>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
