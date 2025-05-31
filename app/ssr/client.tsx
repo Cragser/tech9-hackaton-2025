@@ -14,7 +14,24 @@ export function createServerSupabaseClient() {
   );
 }
 
+// Lets use this one!!
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_KEY!,
 );
+
+// useEffect(() => {
+//   console.log("ReportPage");
+
+//   function loadData() {
+//     supabase.from("category").select("*").then(({ data, error }) => {
+//       if (error) {
+//         console.error("Error loading categories:", error);
+//       } else {
+//         console.log("Categories loaded:", data);
+//       }
+//     });
+//   }
+
+//   loadData();
+// }, []);
