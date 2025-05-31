@@ -82,12 +82,6 @@ export default function CommentModal({
       }
     } catch (error) {
       console.error('Error creating comment:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      console.error('Comment data being sent:', {
-        content: comment.trim(),
-        author: user?.emailAddresses[0]?.emailAddress || user?.firstName || 'Anonymous',
-        issue_id: issueId
-      });
       // You could add a toast notification here for better UX
     }
   };

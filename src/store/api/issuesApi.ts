@@ -1,5 +1,6 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Issue, CreateIssueRequest, UpdateIssueRequest } from '@/types/issue';
+import { Comment, CreateCommentRequest } from '@/types/comment';
 import {
   fetchIssues,
   fetchIssuesWithFilters,
@@ -11,6 +12,10 @@ import {
   claimIssue,
   resolveIssue,
 } from '@/lib/supabase/issues';
+import {
+  fetchCommentsByIssueId,
+  createComment,
+} from '@/lib/supabase/comments';
 import type { RootState } from '../store';
 
 // Helper to get session token (will be passed from components)
@@ -23,7 +28,7 @@ export const setSessionToken = (token: string | null) => {
 export const issuesApi = createApi({
   reducerPath: 'issuesApi',
   baseQuery: fakeBaseQuery(),
-  tagTypes: ['Issue'],
+  tagTypes: ['Issue', 'Comment'],
   endpoints: (builder) => ({
     // Fetch all issues
     getIssues: builder.query<Issue[], void>({
@@ -168,6 +173,38 @@ export const issuesApi = createApi({
       },
       invalidatesTags: (result, error, id) => [{ type: 'Issue', id }, 'Issue'],
     }),
+
+    // Fetch comments for an issue
+    getCommentsByIssueId: builder.query<Comment[], number>({
+      queryFn: async (issueId) => {
+        try {
+          const data = await fetchCommentsByIssueId(issueId, currentSessionToken);
+          return { data };
+        } catch (error) {
+          return { error: { status: 'FETCH_ERROR', error: String(error) } };
+        }
+      },
+      providesTags: (result, error, issueId) => [
+        { type: 'Comment', id: `issue-${issueId}` },
+        'Comment'
+      ],
+    }),
+
+    // Create a new comment
+    createComment: builder.mutation<Comment, CreateCommentRequest>({
+      queryFn: async (newComment) => {
+        try {
+          const data = await createComment(newComment, currentSessionToken);
+          return { data };
+        } catch (error) {
+          return { error: { status: 'FETCH_ERROR', error: String(error) } };
+        }
+      },
+      invalidatesTags: (result, error, { issue_id }) => [
+        { type: 'Comment', id: `issue-${issue_id}` },
+        'Comment'
+      ],
+    }),
   }),
 });
 
@@ -181,4 +218,6 @@ export const {
   useLikeIssueMutation,
   useClaimIssueMutation,
   useResolveIssueMutation,
+  useGetCommentsByIssueIdQuery,
+  useCreateCommentMutation,
 } = issuesApi;

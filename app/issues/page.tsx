@@ -13,10 +13,16 @@ import { useSession } from "@clerk/nextjs";
 import { useAppDispatch } from "@/store/hooks";
 import { setSessionToken as setReduxSessionToken } from "@/store/slices/authSlice";
 import { AISummaryComponent } from "../@modules/ai-summary";
+import CommentModal from "@/components/modals/CommentModal";
 
 export default function IssuesPage() {
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("priority");
+  const [commentModal, setCommentModal] = useState<{ isOpen: boolean; issueId: number; issueTitle: string }>({
+    isOpen: false,
+    issueId: 0,
+    issueTitle: ""
+  });
 
   // Get Clerk session for authentication
   const { session } = useSession();
@@ -101,6 +107,16 @@ export default function IssuesPage() {
     } catch (error) {
       console.error('Failed to claim issue:', error);
     }
+  };
+
+  // Handle opening comment modal
+  const handleOpenCommentModal = (issueId: number, issueTitle: string) => {
+    setCommentModal({ isOpen: true, issueId, issueTitle });
+  };
+
+  // Handle closing comment modal
+  const handleCloseCommentModal = () => {
+    setCommentModal({ isOpen: false, issueId: 0, issueTitle: "" });
   };
 
   // Show loading state
@@ -296,7 +312,7 @@ export default function IssuesPage() {
             <CardContent>
               <p className="text-gray-700 mb-4">{issue.description}</p>
 
-        
+
 
               {/* Issue Details */}
               <div className="grid md:grid-cols-2 gap-4 mb-4">
@@ -346,10 +362,13 @@ export default function IssuesPage() {
                     )}
                     {issue.likes}
                   </button>
-                  <div className="flex items-center text-sm text-gray-600">
+                  <button
+                    onClick={() => handleOpenCommentModal(issue.id, issue.title)}
+                    className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                  >
                     <MessageCircle className="w-4 h-4 mr-1" />
                     {issue.comments || 0}
-                  </div>
+                  </button>
                 </div>
 
                 <div className="space-x-2">
@@ -383,6 +402,18 @@ export default function IssuesPage() {
           </p>
         </div>
       )}
+
+      {/* Comment Modal */}
+      <CommentModal
+        isOpen={commentModal.isOpen}
+        onClose={handleCloseCommentModal}
+        issueId={commentModal.issueId}
+        issueTitle={commentModal.issueTitle}
+        onCommentAdded={() => {
+          // Optionally refresh data or show success message
+          console.log('Comment added successfully');
+        }}
+      />
     </div>
   );
 }
