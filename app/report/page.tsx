@@ -7,9 +7,11 @@ import { Camera, MapPin, AlertCircle, Upload } from "lucide-react";
 import { supabase } from "../ssr/client";
 import PriorityEnum from "@/constants/priority";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 
 export default function ReportPage() {
+  const router = useRouter();
   const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
   const { user } = useUser();
   const [formData, setFormData] = useState({
@@ -96,7 +98,7 @@ export default function ReportPage() {
 
     setSubmitting(true);
 
-    await supabase.from("issues").insert({
+    const { error } = await supabase.from("issues").insert({
       title: formData.title,
       description: formData.description,
       category_id: Number(formData.category),
@@ -108,18 +110,10 @@ export default function ReportPage() {
     });
 
     setSubmitting(false);
-    // TODO: Implement issue submission to database
-    // setTimeout(() => {
-    //   alert("Issue reported successfully! Our community heroes will be notified.");
-    //   setFormData({
-    //     title: "",
-    //     description: "",
-    //     category: "",
-    //     location: "",
-    //     urgency: PriorityEnum.MEDIUM
-    //   });
-    //   setSubmitting(false);
-    // }, 1000);
+    
+    if (!error) {
+      router.push('/issues');
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
