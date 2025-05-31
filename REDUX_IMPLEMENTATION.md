@@ -11,9 +11,10 @@ This implementation adds Redux Toolkit with RTK Query to manage issues data from
 - **Redux Provider** (`src/components/providers/ReduxProvider.tsx`)
 
 ### 2. Supabase Integration
-- **Client configuration** (`src/lib/supabase/client.ts`)
+- **Uses existing client** from `app/ssr/client.tsx`
 - **Issues service functions** (`src/lib/supabase/issues.ts`)
 - **Data transformation utilities** (`src/lib/utils/issueTransforms.ts`)
+- **Clerk authentication integration** for secure API calls
 
 ### 3. TypeScript Types
 - **Issue interfaces** (`src/types/issue.ts`)

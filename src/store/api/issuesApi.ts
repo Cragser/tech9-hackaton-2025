@@ -12,6 +12,13 @@ import {
   resolveIssue,
 } from '@/lib/supabase/issues';
 
+// Helper to get session token (will be passed from components)
+let currentSessionToken: string | null = null;
+
+export const setSessionToken = (token: string | null) => {
+  currentSessionToken = token;
+};
+
 export const issuesApi = createApi({
   reducerPath: 'issuesApi',
   baseQuery: fakeBaseQuery(),
@@ -21,7 +28,7 @@ export const issuesApi = createApi({
     getIssues: builder.query<Issue[], void>({
       queryFn: async () => {
         try {
-          const data = await fetchIssues();
+          const data = await fetchIssues(currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -37,7 +44,7 @@ export const issuesApi = createApi({
     >({
       queryFn: async ({ status, priority, category_id }) => {
         try {
-          const data = await fetchIssuesWithFilters(status, priority, category_id);
+          const data = await fetchIssuesWithFilters(status, priority, category_id, currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -50,7 +57,7 @@ export const issuesApi = createApi({
     getIssueById: builder.query<Issue | null, number>({
       queryFn: async (id) => {
         try {
-          const data = await fetchIssueById(id);
+          const data = await fetchIssueById(id, currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -63,7 +70,7 @@ export const issuesApi = createApi({
     createIssue: builder.mutation<Issue, CreateIssueRequest>({
       queryFn: async (newIssue) => {
         try {
-          const data = await createIssue(newIssue);
+          const data = await createIssue(newIssue, currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -76,7 +83,7 @@ export const issuesApi = createApi({
     updateIssue: builder.mutation<Issue, UpdateIssueRequest>({
       queryFn: async (updatedIssue) => {
         try {
-          const data = await updateIssue(updatedIssue);
+          const data = await updateIssue(updatedIssue, currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -89,7 +96,7 @@ export const issuesApi = createApi({
     deleteIssue: builder.mutation<void, number>({
       queryFn: async (id) => {
         try {
-          await deleteIssue(id);
+          await deleteIssue(id, currentSessionToken);
           return { data: undefined };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -102,7 +109,7 @@ export const issuesApi = createApi({
     likeIssue: builder.mutation<Issue, number>({
       queryFn: async (id) => {
         try {
-          const data = await likeIssue(id);
+          const data = await likeIssue(id, currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -115,7 +122,7 @@ export const issuesApi = createApi({
     claimIssue: builder.mutation<Issue, { id: number; userId: number }>({
       queryFn: async ({ id, userId }) => {
         try {
-          const data = await claimIssue(id, userId);
+          const data = await claimIssue(id, userId, currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };
@@ -128,7 +135,7 @@ export const issuesApi = createApi({
     resolveIssue: builder.mutation<Issue, number>({
       queryFn: async (id) => {
         try {
-          const data = await resolveIssue(id);
+          const data = await resolveIssue(id, currentSessionToken);
           return { data };
         } catch (error) {
           return { error: { status: 'FETCH_ERROR', error: String(error) } };

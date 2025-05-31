@@ -1,9 +1,27 @@
-import { supabase } from './client';
+import { supabase } from '../../../app/ssr/client';
+import { createClient } from '@supabase/supabase-js';
 import { Issue, CreateIssueRequest, UpdateIssueRequest } from '@/types/issue';
 
+// Create authenticated Supabase client for client-side operations
+export function createAuthenticatedSupabaseClient(sessionToken?: string | null) {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_KEY!,
+    sessionToken ? {
+      global: {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      },
+    } : undefined
+  );
+}
+
 // Fetch all issues from Supabase
-export async function fetchIssues(): Promise<Issue[]> {
-  const { data, error } = await supabase
+export async function fetchIssues(sessionToken?: string | null): Promise<Issue[]> {
+  const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
+
+  const { data, error } = await client
     .from('issues')
     .select('*')
     .order('created_at', { ascending: false });
@@ -20,9 +38,12 @@ export async function fetchIssues(): Promise<Issue[]> {
 export async function fetchIssuesWithFilters(
   status?: string,
   priority?: string,
-  category_id?: number
+  category_id?: number,
+  sessionToken?: string | null
 ): Promise<Issue[]> {
-  let query = supabase
+  const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
+
+  let query = client
     .from('issues')
     .select('*');
 
@@ -51,8 +72,10 @@ export async function fetchIssuesWithFilters(
 }
 
 // Fetch a single issue by ID
-export async function fetchIssueById(id: number): Promise<Issue | null> {
-  const { data, error } = await supabase
+export async function fetchIssueById(id: number, sessionToken?: string | null): Promise<Issue | null> {
+  const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
+
+  const { data, error } = await client
     .from('issues')
     .select('*')
     .eq('id', id)
@@ -67,8 +90,10 @@ export async function fetchIssueById(id: number): Promise<Issue | null> {
 }
 
 // Create a new issue
-export async function createIssue(issue: CreateIssueRequest): Promise<Issue> {
-  const { data, error } = await supabase
+export async function createIssue(issue: CreateIssueRequest, sessionToken?: string | null): Promise<Issue> {
+  const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
+
+  const { data, error } = await client
     .from('issues')
     .insert([{
       ...issue,
@@ -88,10 +113,11 @@ export async function createIssue(issue: CreateIssueRequest): Promise<Issue> {
 }
 
 // Update an existing issue
-export async function updateIssue(issue: UpdateIssueRequest): Promise<Issue> {
+export async function updateIssue(issue: UpdateIssueRequest, sessionToken?: string | null): Promise<Issue> {
+  const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
   const { id, ...updateData } = issue;
-  
-  const { data, error } = await supabase
+
+  const { data, error } = await client
     .from('issues')
     .update(updateData)
     .eq('id', id)
@@ -107,8 +133,10 @@ export async function updateIssue(issue: UpdateIssueRequest): Promise<Issue> {
 }
 
 // Delete an issue
-export async function deleteIssue(id: number): Promise<void> {
-  const { error } = await supabase
+export async function deleteIssue(id: number, sessionToken?: string | null): Promise<void> {
+  const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
+
+  const { error } = await client
     .from('issues')
     .delete()
     .eq('id', id);
@@ -120,8 +148,10 @@ export async function deleteIssue(id: number): Promise<void> {
 }
 
 // Increment likes for an issue
-export async function likeIssue(id: number): Promise<Issue> {
-  const { data, error } = await supabase
+export async function likeIssue(id: number, sessionToken?: string | null): Promise<Issue> {
+  const client = sessionToken ? createAuthenticatedSupabaseClient(sessionToken) : supabase;
+
+  const { data, error } = await client
     .rpc('increment_likes', { issue_id: id });
 
   if (error) {
@@ -130,22 +160,22 @@ export async function likeIssue(id: number): Promise<Issue> {
   }
 
   // Fetch the updated issue
-  return fetchIssueById(id) as Promise<Issue>;
+  return fetchIssueById(id, sessionToken) as Promise<Issue>;
 }
 
 // Claim an issue (set fixed_by to current user)
-export async function claimIssue(id: number, userId: number): Promise<Issue> {
+export async function claimIssue(id: number, userId: number, sessionToken?: string | null): Promise<Issue> {
   return updateIssue({
     id,
     status: 'claimed',
     fixed_by: userId
-  });
+  }, sessionToken);
 }
 
 // Resolve an issue
-export async function resolveIssue(id: number): Promise<Issue> {
+export async function resolveIssue(id: number, sessionToken?: string | null): Promise<Issue> {
   return updateIssue({
     id,
     status: 'resolved'
-  });
+  }, sessionToken);
 }
