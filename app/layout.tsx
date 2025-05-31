@@ -6,6 +6,7 @@ import {
 } from "@clerk/nextjs";
 import "./globals.css";
 import Header from "@/components/Header";
+import { ReduxProvider } from "@/components/providers/ReduxProvider";
 
 export default function RootLayout({
   children,
@@ -16,7 +17,8 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body>
-          <SignedOut>
+          <ReduxProvider>
+            <SignedOut>
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
               <div className="max-w-md w-full space-y-8 p-8">
                 <div className="text-center">
@@ -52,6 +54,7 @@ export default function RootLayout({
               </main>
             </div>
           </SignedIn>
+          </ReduxProvider>
         </body>
       </html>
     </ClerkProvider>
