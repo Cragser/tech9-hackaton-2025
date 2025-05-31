@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+ App Summary for "Save Me" Preview Prompt (with Donations):
+
+"Visualize 'Save Me,' a modern, mobile-friendly community platform where users report local issues like potholes or broken park benches by submitting descriptions, photos, and pinpointing locations on a map.
+
+The app intelligently processes these reports:
+
+An AI checks submissions against community guidelines.
+Reported issues are displayed in a clean, card-based list, each automatically summarized and ranked for criticality by AI.
+Users can comment on these issues.
+'Heroes' from the community can find and 'claim' these reported problems to solve. After resolving an issue, they can submit proof (e.g., a photo of the fix) and earn digital badges on their profiles, gamifying community improvement.
+
+To further support these community efforts and platform operations, 'Save Me' prominently features a new 'Donate' page accessible from the main header. This dedicated section includes a straightforward form where supporters can contribute financially, entering the donation amount and their name. These funds can help provide resources for 'hero' projects or sustain the platform's development.
+
+Site administrators oversee submitted content and ensure the platform runs smoothly. The overall interface should feel intuitive, collaborative, and empowering, showcasing how technology, community effort, and financial support combine to make a tangible difference."
+
+Updated key visual elements to imagine or request in a preview:
+
+Issue Submission: A user on a smartphone taking a photo of a problem (e.g., a pothole), an embedded map showing location selection.
+Issue Feed/List: A scrollable list of sleek, modern cards. Each card shows an image of the issue, an AI-generated summary, a visual rank/priority, and comment/vote counts.
+Hero Action: A screen where a "hero" marks an issue as resolved, possibly uploading a "before & after" or "fixed" photo.
+User Profile: A profile page showcasing a "hero's" earned badges.
+Donations Page & Header Link:
+A clear "Donate" or "Support Us" link visible in the app's main header/navigation.
+The Donations page itself, featuring a simple and secure form with fields for "Amount" and "Name," and possibly options for recurring donations or payment methods. Include some motivating text about the impact of contributions.
+AI Integration (subtle cues): Perhaps small icons or text indicating "AI Summary" or "AI Ranked."
