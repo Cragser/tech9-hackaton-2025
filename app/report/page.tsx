@@ -1,11 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Camera, MapPin, AlertCircle, Upload } from "lucide-react";
+import { supabase } from "../ssr/client";
+
 
 export default function ReportPage() {
+  useEffect(() => {
+    console.log("ReportPage");
+
+    function loadData() {
+      supabase.from("category").select("*").then(({ data, error }) => {
+        if (error) {
+          console.error("Error loading categories:", error);
+        } else {
+          console.log("Categories loaded:", data);
+        }
+      });
+    }
+
+    loadData();
+  }, []);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
